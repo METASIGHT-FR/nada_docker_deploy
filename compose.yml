@@ -1,0 +1,21 @@
+services:
+  app:
+    build:
+      dockerfile: Dockerfile-nada
+    image: nada_docker
+    ports:
+      - "127.0.0.1:8383:80"
+    volumes:
+      - ./persistent_data/files:/var/www/html/nada/files
+      - ./persistent_data/logs:/var/www/html/nada/logs
+      - ./persistent_data/datafiles:/var/www/html/nada/datafiles
+      - ./persistent_data/cache:/var/www/html/nada/cache            
+    environment:
+      #DB_HOST: host.docker.internal
+      #DB_DATABASE: nada_database
+      #DB_USERNAME: nada_user
+      #DB_PASSWORD: xsgSpR5XVFBXGf16iZBsf1qJTKd
+      DB_HOST: ${DB_HOST:-host.docker.internal}
+      DB_DATABASE: ${DB_DATABASE:-nada_database}
+      DB_USERNAME: ${DB_USERNAME:-nada_user}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}

@@ -1,0 +1,80 @@
+FROM php:8.2-apache
+
+LABEL MAINTAINER Vincent BENOIT
+
+# CUSTOMISE WITH YOUR HOST UID : GID
+# NOTE : use "id" command to get host uid and gid
+
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+# Modify www-data group to use host GID
+RUN groupmod -g ${USER_GID} www-data
+ 
+# Modify www-data user to use host UID and GID
+RUN usermod -u ${USER_UID} -g ${USER_GID} www-data
+
+
+COPY ./config/php.ini /usr/local/etc/php/
+COPY ./config/vhost.conf /etc/apache2/sites-available/000-default.conf
+
+
+
+
+COPY ./nada_source_code/.   /var/www/html/nada/
+COPY ./config/database.php /var/www/html/nada/application/config/database.php
+
+# FIX FOLDER RIGHTS
+RUN mkdir -p /var/www/html/nada/files \
+    && chown -R  www-data:www-data /var/www/html/nada/files \
+    && chmod -R 755 /var/www/html/nada/files
+
+RUN mkdir -p /var/www/html/nada/logs \
+    && chown -R www-data:www-data /var/www/html/nada/logs \
+    && chmod -R 755 /var/www/html/nada/logs
+
+RUN mkdir -p /var/www/html/nada/cache \
+    && chown -R www-data:www-data /var/www/html/nada/cache \
+    && chmod -R 755 /var/www/html/nada/cache
+
+RUN mkdir -p /var/www/html/nada/datafiles \  
+    && chown -R www-data:www-data /var/www/html/nada/datafiles \
+    && chmod -R 755 /var/www/html/nada/datafiles
+
+RUN apt-get update 
+
+
+RUN chown -R  www-data:www-data /var/www/html/ 
+
+RUN a2enmod rewrite
+
+
+
+RUN pear config-set php_ini /usr/local/etc/php/php.ini
+
+##for xsl extension for php
+RUN apt-get update -y && apt-get install -y libxslt-dev
+
+##for gd ext
+RUN apt-get update -y && apt-get install -y libpng-dev
+
+
+# Install required dependencies
+RUN apt-get update && apt-get install -y \
+    libonig-dev \
+    libzip-dev \
+    && docker-php-ext-install mbstring zip
+
+RUN docker-php-ext-install mysqli gd
+RUN apt-get install -y libxslt1-dev && \
+    docker-php-ext-install xsl && \
+    apt-get remove -y libxslt1-dev icu-devtools libicu-dev libxml2-dev
+
+
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# FOR SECURITY
+USER www-data
+
+EXPOSE 80
