@@ -1,6 +1,6 @@
-# Deploy DAN Metadata Catalog
+# Deploy NADA Metadata Catalog
 
-Deploy NADA with Docker for DAN Metadata Catalog.
+Deploy NADA Metadata Catalog.
 Complete rewriting of official IHSN docker for Nada : https://github.com/mah0001/nada-docker
 
 
@@ -31,7 +31,7 @@ git clone https://github.com/ihsn/nada.git nada_source_code
 ```
 
 ### Build the container image
-Folder : `./dan-metadata-catalog-deploy`
+Folder : `./nada_docker_deploy`
 
 
 First, check your uid and gid
@@ -75,7 +75,7 @@ docker compose build --no-cache
 Should finish with no error.
 
 ### Fix persistent storage user rights
-Folder : `./dan-metadata-catalog-deploy`
+Folder : `./nada_docker_deploy`
 
 Note : change with your username
 ```
@@ -85,7 +85,7 @@ sudo chmod -R 755 ./persistent_data/
 ```
 
 ### Start the container
-Folder : `./dan-metadata-catalog-deploy`
+Folder : `./nada_docker_deploy`
 
 ```
 docker compose up -d
@@ -102,12 +102,12 @@ Check that every check is cleared at `yes`.
 
 ### Optional : apply patches for branding and custom pages
 
-Folder : `./dan-metadata-catalog-deploy`
+Folder : `./nada_docker_deploy`
 
 Get the patch files from github into the `nada_patch` folder.
 
 ```
-git clone git@github.com:benoit-vincent/nada_tweaks-for-dan.git nada_patch
+git clone git@github.com:[my_repo_for_tweaks].git nada_patch
 ```
 
 Get the container id for NADA.
@@ -116,7 +116,7 @@ Get the container id for NADA.
 docker ps
 ```
 
-Go to folder : `./dan-metadata-catalog-deploy/nada_patch`
+Go to folder : `./nada_docker_deploy/nada_patch`
 
 ```
 ./patch_container.sh yourcontainerid
